@@ -3,6 +3,8 @@ import cv2
 import time
 import numpy as np
 import math
+import findxy
+import os
 
 model = YOLO("yolov8n.pt")
 cap = cv2.VideoCapture('http://192.168.0.77:9000/stream.mjpg')
@@ -72,6 +74,7 @@ class YoloDetect:
 
         res_plotted = cv2.cvtColor(res[0].plot(),cv2.COLOR_RGB2BGR)
         cv2.imshow("result", res_plotted)
+        os.system('clear')
         return result
 
 
@@ -95,6 +98,7 @@ def findDistance(ranges, angle_min, angle_increment, desired_angle_degrees):
     #print('rad : ', desired_angle_radians)
     #print(f'{desired_angle_degrees}도방향 {distance}(m) 떨어져 있음')
 
+    return distance, desired_angle_degrees
 
 if __name__=='__main__':
     asdf = YoloDetect()
@@ -109,8 +113,18 @@ if __name__=='__main__':
                 ranges = eval(f.readline())
                 angle_min = eval(f.readline())
                 angle_increment = eval(f.readline())
+            
+    
+            Distance, angle = findDistance(ranges, angle_min, angle_increment, humanXposition[0])
+            x, y = findxy.findPosition(Distance, angle)
+            print(f"x:{x}")
+            print(f"y:{y}")
 
-            findDistance(ranges, angle_min, angle_increment, humanXposition[0])
+            if x != 0 and y != 0:
+                with open('xyValue.txt', 'a') as f:
+                    f.write(str(x)+"\n")
+                    f.write(str(y)+"\n")
+                    
         except:
             pass
 
