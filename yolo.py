@@ -3,8 +3,6 @@ import cv2
 import time
 import numpy as np
 import math
-import getLidar2
-
 
 model = YOLO("yolov8n.pt")
 cap = cv2.VideoCapture('http://192.168.0.77:9000/stream.mjpg')
@@ -83,20 +81,38 @@ class YoloDetect:
         cap.release()
         #cv2.destroyAllWindows()
 
+def findDistance(ranges, angle_min, angle_increment, desired_angle_degrees):
+    desired_angle_radians = math.radians(desired_angle_degrees)
+    index = int((desired_angle_radians - angle_min) / angle_increment)
+    
+    distance = 'err'
+    if index < len(ranges):
+        distance = ranges[index]
+    
+    #print('\n'*20)
+    #print('분해능 : ',len(ranges))
+    #print('index : ',index)
+    #print('rad : ', desired_angle_radians)
+    #print(f'{desired_angle_degrees}도방향 {distance}(m) 떨어져 있음')
+
+
 if __name__=='__main__':
     asdf = YoloDetect()
     while True:
 
-        humanXposition = asdf()[0]
+        humanXposition = asdf()
         print(humanXposition)
-        getLidar2.startSubscribe(humanXposition)
-    
-        if humanXposition < 0:
-            humanXposition = 360 - abs(humanXposition)
-
-        elif humanXposition == 0:
-            humanXposition = 360
+        nan = 0
         
+        try:
+            with open('sharedValue.txt', 'r') as f:
+                ranges = eval(f.readline())
+                angle_min = eval(f.readline())
+                angle_increment = eval(f.readline())
+
+            findDistance(ranges, angle_min, angle_increment, humanXposition[0])
+        except:
+            pass
 
         if cv2.waitKey(1)&0xff==27:
             asdf.releaseCapture()

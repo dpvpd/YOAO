@@ -5,6 +5,7 @@ import rclpy
 def chatter_callback(msg):
     print(msg)
 
+
 def main():
     rclpy.init()
     qos = QoSProfile(depth=10)
@@ -22,3 +23,4 @@ if __name__ == "__main__":
     print('Starting scan listener')
     main()
     print('done.')        
+
