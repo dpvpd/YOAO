@@ -102,32 +102,32 @@ def findDistance(ranges, angle_min, angle_increment, desired_angle_degrees):
 
 if __name__=='__main__':
     asdf = YoloDetect()
-    while True:
-
-        humanXposition = asdf()
-        print(humanXposition)
-        nan = 0
-        
-        try:
-            with open('sharedValue.txt', 'r') as f:
-                ranges = eval(f.readline())
-                angle_min = eval(f.readline())
-                angle_increment = eval(f.readline())
-            
+    nan = 0
+    noHumanFoundCounter = 0
     
-            Distance, angle = findDistance(ranges, angle_min, angle_increment, humanXposition[0])
-            x, y = findxy.findPosition(Distance, angle)
-            print(f"x:{x}")
-            print(f"y:{y}")
+    while True:
+        humanXposition = asdf()
+        print(f"humanXposition : {humanXposition}")
+        
+        with open('sharedValue.txt', 'r') as f:
+            ranges = eval(f.readline())
+            angle_min = eval(f.readline())
+            angle_increment = eval(f.readline())
 
-            if x != 0 and y != 0:
-                with open('xyValue.txt', 'a') as f:
-                    f.write(str(x)+"\n")
-                    f.write(str(y)+"\n")
-                    
-        except:
-            pass
+            if len(humanXposition) == 1:
+                Distance, angle = findDistance(ranges, angle_min, angle_increment, humanXposition[0])
+                x, y = findxy.findPosition(Distance, angle)
+                print(f"x:{x}")
+                print(f"y:{y}")
 
+                if x != 0 and y != 0:
+                    with open('xyValue.txt', 'a') as f:
+                        f.write(str(x)+"\n")
+                        f.write(str(y)+"\n")
+
+            else:
+                noHumanFoundCounter += 1
+ 
         if cv2.waitKey(1)&0xff==27:
             asdf.releaseCapture()
 
