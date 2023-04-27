@@ -5,6 +5,7 @@ import numpy as np
 import math
 import findxy
 import os
+from Vector import Vector2 as vec
 
 model = YOLO("yolov8n.pt")
 cap = cv2.VideoCapture('http://192.168.0.77:9000/stream.mjpg')
@@ -65,17 +66,19 @@ class YoloDetect:
                     humans.append(i.boxes.xyxy.tolist()[j])
 
         result = []
+        humanpos = []
         for i in range(len(humans)):
             x1,y1,x2,y2 = humans[i]
-            cx, xy = (x1+x2)//2, (y1+y2)//2
+            cx, cy = (x1+x2)//2, (y1+y2)//2
+            humanpos.append((cx,cy))
             xAngle = ((cx/self.ImageWidth)-.5)*self.CamAngle
             #print(xAngle)
             result.append(xAngle)
 
         res_plotted = cv2.cvtColor(res[0].plot(),cv2.COLOR_RGB2BGR)
-        cv2.imshow("result", res_plotted)
+        #cv2.imshow("result", res_plotted)
         os.system('clear')
-        return result
+        return result, humanpos, res_plotted
 
 
         #if cv2.waitKey(1)&0xff==27:
@@ -104,9 +107,13 @@ if __name__=='__main__':
     asdf = YoloDetect()
     nan = 0
     noHumanFoundCounter = 0
+
+    prevpos = vec(0,0)
+    nowpos = vec(0,0)
+    count = 0
     
     while True:
-        humanXposition = asdf()
+        humanXposition, imgpos, showimg = asdf()
         print(f"humanXposition : {humanXposition}")
         
         with open('sharedValue.txt', 'r') as f:
@@ -125,9 +132,28 @@ if __name__=='__main__':
                         f.write(str(x)+"\n")
                         f.write(str(y)+"\n")
 
+                if count>0:
+                    prevpos = nowpos
+                    nowpos = vec(x,y)
+
+                    motionVector = nowpos - prevpos
+
+                    dist = nowpos.getSize()
+                    speed = motionVector.getSize()
+                    mx, my = motionVector.value
+                    u = vec(mx/speed, my/speed)
+                    h,w = asdf.ImageHeight, asdf.ImageWidth
+                    humanvec = vec(imgpos[0][0],imgpos[0][1])
+                    imgdist = (vec(h/2, w/2) - humanvec).getSize()
+                    drawvec = u*((speed/dist)*imgdist)
+                    
+
+                    showimg = cv2.arrowedLine(showimg,humanvec.value, (drawvec+humanvec).value, (0,255,0),3)
+                    
+                count +=1
             else:
                 noHumanFoundCounter += 1
- 
+        cv2.imshow('result', showimg)
         if cv2.waitKey(1)&0xff==27:
             asdf.releaseCapture()
 
