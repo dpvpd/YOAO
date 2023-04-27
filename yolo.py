@@ -140,17 +140,18 @@ if __name__=='__main__':
 
                     dist = nowpos.getSize()
                     speed = motionVector.getSize()
-                    mx, my = motionVector.value
-                    u = vec(mx/speed, my/speed)
-                    h,w = asdf.ImageHeight, asdf.ImageWidth
-                    humanvec = vec(imgpos[0][0],imgpos[0][1])
-                    imgdist = (vec(h/2, w/2) - humanvec).getSize()
-                    drawvec = u*((speed/dist)*imgdist)
-                    
-                    a, b= humanvec.value, (drawvec+humanvec).value
-                    c = (int(a[0]),int(a[1]))
-                    d = (int(b[0]),int(b[1]))
-                    showimg = cv2.arrowedLine(showimg,c, d, (0,255,0),3)
+                    if speed!=0 and dist!=0:
+                        mx, my = motionVector.value
+                        u = vec(mx/speed, my/speed)
+                        h,w = asdf.ImageHeight, asdf.ImageWidth
+                        humanvec = vec(imgpos[0][0],imgpos[0][1])
+                        imgdist = (vec(h/2, w/2) - humanvec).getSize()
+                        drawvec = u*((speed/dist)*imgdist)
+                        
+                        a, b= humanvec.value, (drawvec+humanvec).value
+                        c = (int(a[0]),int(a[1]))
+                        d = (int(b[0]),int(b[1]))
+                        showimg = cv2.arrowedLine(showimg,c, d, (0,255,0),3)
                     
                 count +=1
             else:
