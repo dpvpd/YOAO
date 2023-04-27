@@ -147,8 +147,10 @@ if __name__=='__main__':
                     imgdist = (vec(h/2, w/2) - humanvec).getSize()
                     drawvec = u*((speed/dist)*imgdist)
                     
-
-                    showimg = cv2.arrowedLine(showimg,humanvec.value, (drawvec+humanvec).value, (0,255,0),3)
+                    a, b= humanvec.value, (drawvec+humanvec).value
+                    c = (int(a[0]),int(a[1]))
+                    d = (int(b[0]),int(b[1]))
+                    showimg = cv2.arrowedLine(showimg,c, d, (0,255,0),3)
                     
                 count +=1
             else:

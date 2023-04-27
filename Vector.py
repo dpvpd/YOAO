@@ -35,7 +35,7 @@ class Vector2:
     
     def __mul__(self, __x):
         x, y = self.value
-        if type(__x) in [type(int()), type(float)]:
+        if type(__x) in [type(int()), type(float())]:
             return Vector2(x*__x, y*__x)
         else:
             #원래 이게 외적이어야하고
