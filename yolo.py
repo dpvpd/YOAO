@@ -132,7 +132,7 @@ if __name__=='__main__':
                         f.write(str(x)+"\n")
                         f.write(str(y)+"\n")
 
-                if count>0:
+                if count>0 and (x,y)!=(0,0):
                     prevpos = nowpos
                     nowpos = vec(x,y)
 
